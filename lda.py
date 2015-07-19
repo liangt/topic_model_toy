@@ -35,16 +35,17 @@ def lda(docs_words, num_words, num_topics, max_iter=500, alpha=None, beta=0.01, 
     for m, doc in enumerate(docs_words):
         temp = []
         for word in doc:
-            topic = np.random.randint(num_topics)
-            temp.append(topic)
-            topics_words[topic][word] += 1
-            docs_topics[m][topic] += 1
-            topics_words_sum[topic] += 1
+            init_topic = np.random.randint(num_topics)
+            temp.append(init_topic)
+            topics_words[init_topic][word] += 1
+            docs_topics[m][init_topic] += 1
+            topics_words_sum[init_topic] += 1
         docs_topics_sum[m] = len(doc)
         docs_words_topic.append(temp)
 
     # Gibbs sampling
-    for i in range(max_iter):
+    for ite in range(max_iter):
+        print 'Iteration %d' % ite
         for m, doc in enumerate(docs_words_topic):
             for n, topic in enumerate(doc):
                 word = docs_words[m][n]
@@ -67,16 +68,16 @@ def lda(docs_words, num_words, num_topics, max_iter=500, alpha=None, beta=0.01, 
 
                 docs_words_topic[m][n] = new_topic
 
-                if i > burn_in and lag > 0 and i % lag == 0:
-                    for d in range(num_docs):
-                        for k in range(num_topics):
-                            theta[d][k] += (docs_topics[d][k]+alpha)/(docs_topics_sum[d]+num_topics*alpha)
+        if ite > burn_in and lag > 0 and ite % lag == 0:
+            for d in range(num_docs):
+                for k in range(num_topics):
+                    theta[d][k] += (docs_topics[d][k]+alpha)/(docs_topics_sum[d]+num_topics*alpha)
 
-                    for k in range(num_topics):
-                        for w in range(num_words):
-                            phi[k][w] += (topics_words[k][w]+beta)/(topics_words_sum[k]+num_words*beta)
+            for k in range(num_topics):
+                for w in range(num_words):
+                    phi[k][w] += (topics_words[k][w]+beta)/(topics_words_sum[k]+num_words*beta)
 
-                    num_stats += 1
+            num_stats += 1
 
     theta /= num_stats
     phi /= num_stats
