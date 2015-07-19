@@ -6,7 +6,7 @@ __author__ = 'liangliang'
 import numpy as np
 
 
-def lda(docs_words, num_words, num_topics, max_iter=500, alpha=None, beta=0.01, burn_in=50, lag=20):
+def lda(docs_words, num_words, num_topics, max_iter=500, alpha=None, beta=0.01, burn_in=300, lag=20):
     """
     :param docs_words: documents, each represented by the index of each word
     :param num_words: the size of vocabulary
@@ -14,7 +14,7 @@ def lda(docs_words, num_words, num_topics, max_iter=500, alpha=None, beta=0.01, 
     :param max_iter: iteration steps, default is 500
     :param alpha: hyperparameter alpha, default is 50/num_topics
     :param beta: hyperparameter beta, default is 0.01
-    :param burn_in: burn_in iterations, default is 50
+    :param burn_in: burn_in iterations, default is 300
     :param lag: sampling lag(thinning interval), default is 20
     :return theta: [num_docs, num_topics]
     :return phi: [num_topics, num_words]
@@ -55,8 +55,8 @@ def lda(docs_words, num_words, num_topics, max_iter=500, alpha=None, beta=0.01, 
 
                 p = np.zeros(num_topics)
                 for k in range(num_topics):
-                    p[k] = (topics_words[topic][word]+beta)/(topics_words_sum[k]+num_words*beta)*\
-                           (docs_topics[m][topic]+alpha)/(docs_topics_sum[m]+num_topics*alpha)
+                    p[k] = (topics_words[k][word]+beta)/(topics_words_sum[k]+num_words*beta)*\
+                           (docs_topics[m][k]+alpha)/(docs_topics_sum[m]+num_topics*alpha)
                 p /= p.sum()
                 new_topic = np.argmax(np.random.multinomial(1, p, 1))
 
